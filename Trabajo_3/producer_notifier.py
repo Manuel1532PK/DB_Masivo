@@ -5,7 +5,7 @@ from datetime import datetime
 # Consumidor del topic 'decisiones'
 consumer = KafkaConsumer(
     'decisiones',
-    bootstrap_servers=['localhost:9092'],
+    bootstrap_servers=['localhost:29092'],
     auto_offset_reset='earliest',
     group_id='notifier-group',
     value_deserializer=lambda m: json.loads(m.decode('utf-8'))
@@ -13,7 +13,7 @@ consumer = KafkaConsumer(
 
 # Productor para notificaciones
 producer = KafkaProducer(
-    bootstrap_servers=['localhost:9092'],
+    bootstrap_servers=['localhost:29092'],
     value_serializer=lambda v: json.dumps(v, default=str).encode('utf-8')
 )
 
@@ -22,7 +22,7 @@ print("Servicio de notificaciones activo (escuchando decisiones)...")
 for msg in consumer:
     decision = msg.value
     trans_id = decision['transaction_id']
-    accion = decision['accion']  # 'accept' o 'reject'
+    accion = decision['accion']  
     estado_final = "aceptada" if accion == "accept" else "rechazada"
 
     notificacion = {

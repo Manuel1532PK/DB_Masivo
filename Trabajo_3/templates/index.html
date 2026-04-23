@@ -60,69 +60,161 @@
       </div>
     </div>
 
+    <div class="container mt-5">
+      <h2>💳 Eventos de Tarjetas</h2>
+      <p>
+        Eventos generados por <code>producer_cards.py</code> (cada 3 segundos).
+      </p>
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover" id="cardsTable">
+          <thead class="table-dark">
+            <tr>
+              <th>Evento ID</th>
+              <th>Tarjeta ID</th>
+              <th>Cliente</th>
+              <th>Tipo</th>
+              <th>Monto (COP)</th>
+              <th>Comercio</th>
+              <th>Timestamp</th>
+            </tr>
+          </thead>
+          <tbody id="cardsBody">
+            <tr>
+              <td colspan="7" class="text-center">Cargando eventos...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <script>
+      // Función para cargar y mostrar las transacciones
       async function loadTransactions() {
-        const res = await fetch("/api/transactions");
-        const transacciones = await res.json();
-        const tbody = document.getElementById("transBody");
-        tbody.innerHTML = "";
+        try {
+          const res = await fetch("/api/transactions");
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const transacciones = await res.json();
+          const tbody = document.getElementById("transBody");
+          tbody.innerHTML = "";
 
-        if (transacciones.length === 0) {
-          tbody.innerHTML =
-            '<tr><td colspan="9" class="text-center">No hay transacciones aún. Esperando productor...</td></tr>';
-          return;
-        }
-
-        transacciones.sort((a, b) =>
-          a.fecha + a.hora > b.fecha + b.hora ? -1 : 1,
-        );
-
-        for (const tx of transacciones) {
-          const row = tbody.insertRow();
-          row.className = tx.estado;
-          row.insertCell(0).innerText = tx.transaction_id;
-          row.insertCell(1).innerText = tx.fecha;
-          row.insertCell(2).innerText = tx.hora;
-          row.insertCell(3).innerText = tx.nombre;
-          row.insertCell(4).innerText = tx.entidad;
-          row.insertCell(5).innerText = tx.tipo;
-          row.insertCell(6).innerText = `$${tx.monto.toLocaleString()}`;
-          row.insertCell(7).innerText = tx.estado.toUpperCase();
-
-          const actionsCell = row.insertCell(8);
-          if (tx.estado === "pendiente") {
-            const btnAccept = document.createElement("button");
-            btnAccept.innerText = "✅ Aceptar";
-            btnAccept.className = "btn btn-success btn-sm me-1";
-            btnAccept.onclick = () => decide(tx.transaction_id, "accept");
-            const btnReject = document.createElement("button");
-            btnReject.innerText = "❌ Rechazar";
-            btnReject.className = "btn btn-danger btn-sm";
-            btnReject.onclick = () => decide(tx.transaction_id, "reject");
-            actionsCell.appendChild(btnAccept);
-            actionsCell.appendChild(btnReject);
-          } else {
-            actionsCell.innerText = "✔️ Procesada";
+          if (transacciones.length === 0) {
+            tbody.innerHTML =
+              '<tr><td colspan="9" class="text-center">No hay transacciones aún. Esperando productor...</td></tr>';
+            return;
           }
+
+          // Ordenar por fecha+hora descendente (más reciente primero)
+          transacciones.sort((a, b) => {
+            const dateA = new Date(`${a.fecha}T${a.hora}`);
+            const dateB = new Date(`${b.fecha}T${b.hora}`);
+            return dateB - dateA;
+          });
+
+          for (const tx of transacciones) {
+            const row = tbody.insertRow();
+            row.className = tx.estado;
+            row.insertCell(0).innerText = tx.transaction_id;
+            row.insertCell(1).innerText = tx.fecha;
+            row.insertCell(2).innerText = tx.hora;
+            row.insertCell(3).innerText = tx.nombre;
+            row.insertCell(4).innerText = tx.entidad;
+            row.insertCell(5).innerText = tx.tipo;
+            row.insertCell(6).innerText = `$${tx.monto.toLocaleString()}`;
+            row.insertCell(7).innerText = tx.estado.toUpperCase();
+
+            const actionsCell = row.insertCell(8);
+            if (tx.estado === "pendiente") {
+              const btnAccept = document.createElement("button");
+              btnAccept.innerText = "✅ Aceptar";
+              btnAccept.className = "btn btn-success btn-sm me-1";
+              btnAccept.onclick = () => decide(tx.transaction_id, "accept");
+              const btnReject = document.createElement("button");
+              btnReject.innerText = "❌ Rechazar";
+              btnReject.className = "btn btn-danger btn-sm";
+              btnReject.onclick = () => decide(tx.transaction_id, "reject");
+              actionsCell.appendChild(btnAccept);
+              actionsCell.appendChild(btnReject);
+            } else {
+              actionsCell.innerText = "✔️ Procesada";
+            }
+          }
+        } catch (error) {
+          console.error("Error cargando transacciones:", error);
+          const tbody = document.getElementById("transBody");
+          tbody.innerHTML =
+            '<tr><td colspan="9" class="text-center text-danger">Error cargando transacciones</td></tr>';
         }
       }
 
+      // Función para aceptar/rechazar una transacción
       async function decide(id, action) {
-        const res = await fetch(`/api/decide/${id}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: action }),
-        });
-        if (res.ok) {
-          loadTransactions(); // recargar tabla
-        } else {
-          const err = await res.json();
-          alert("Error: " + err.error);
+        try {
+          const res = await fetch(`/api/decide/${id}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: action }),
+          });
+          if (res.ok) {
+            await loadTransactions(); // Recargar tabla después de la decisión
+          } else {
+            const err = await res.json();
+            alert("Error: " + (err.error || "No se pudo procesar la acción"));
+          }
+        } catch (error) {
+          console.error("Error en decide:", error);
+          alert("Error de conexión al servidor");
         }
       }
 
-      setInterval(loadTransactions, 1500);
+      // Función para cargar y mostrar eventos de tarjetas
+      async function loadCards() {
+        try {
+          const res = await fetch("/api/cards");
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const eventos = await res.json();
+          const tbody = document.getElementById("cardsBody");
+          tbody.innerHTML = "";
+
+          if (eventos.length === 0) {
+            tbody.innerHTML =
+              '<tr><td colspan="7" class="text-center">No hay eventos de tarjeta aún. Esperando productor...</td></tr>';
+            return;
+          }
+
+          // Ordenar por timestamp descendente (los más nuevos primero)
+          eventos.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+          for (const ev of eventos) {
+            const row = tbody.insertRow();
+            row.insertCell(0).innerText = ev.evento_id || "";
+            row.insertCell(1).innerText = ev.tarjeta_id || "";
+            row.insertCell(2).innerText = ev.cliente || "";
+            row.insertCell(3).innerText = ev.tipo || "";
+            row.insertCell(4).innerText = ev.monto
+              ? `$${ev.monto.toLocaleString()}`
+              : "N/A";
+            row.insertCell(5).innerText = ev.comercio || "N/A";
+            row.insertCell(6).innerText = ev.timestamp
+              ? new Date(ev.timestamp).toLocaleString()
+              : "";
+          }
+        } catch (error) {
+          console.error("Error cargando eventos de tarjetas:", error);
+          const tbody = document.getElementById("cardsBody");
+          tbody.innerHTML =
+            '<tr><td colspan="7" class="text-center text-danger">Error cargando eventos de tarjetas</td></tr>';
+        }
+      }
+
+      // Actualizar ambas tablas cada 2 segundos (único intervalo)
+      setInterval(() => {
+        loadTransactions();
+        loadCards();
+      }, 2000);
+
+      // Carga inicial
       loadTransactions();
+      loadCards();
     </script>
   </body>
 </html>

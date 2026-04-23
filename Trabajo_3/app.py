@@ -10,9 +10,12 @@ app = Flask(__name__)
 transactions = {}
 lock = threading.Lock()
 
+tarjetas_eventos = {} # tarjeta_id -> último evento
+cards_lock = threading.Lock()
+
 # Productor Kafka para decisiones
 producer = KafkaProducer(
-    bootstrap_servers=['localhost:9092'],
+    bootstrap_servers=['localhost:29092'],
     value_serializer=lambda v: json.dumps(v, default=str).encode('utf-8')
 )
 
@@ -20,7 +23,7 @@ producer = KafkaProducer(
 def consume_transactions():
     consumer = KafkaConsumer(
         'transferencia',
-        bootstrap_servers=['localhost:9092'],
+        bootstrap_servers=['localhost:29092'],
         auto_offset_reset='earliest',
         group_id='dashboard-group',
         value_deserializer=lambda m: json.loads(m.decode('utf-8'))
@@ -33,8 +36,33 @@ def consume_transactions():
                 transactions[tx_id] = tx
         print(f"Transacción recibida: {tx_id} - {tx['nombre']}")
 
-# Iniciar hilo consumidor
+# Consumidor para topic 'tarjetas'
+def consume_cards():
+    consumer_cards = KafkaConsumer(
+        'tarjetas',
+        bootstrap_servers=['localhost:29092'], 
+        auto_offset_reset='earliest',
+        group_id='dashboard-cards-group',
+        value_deserializer=lambda m: json.loads(m.decode('utf-8'))
+    )
+    for msg in consumer_cards:
+        evento = msg.value
+        evento_id = evento.get('evento_id')
+        if evento_id:
+            with cards_lock:
+                if evento_id not in tarjetas_eventos:
+                    tarjetas_eventos[evento_id] = evento
+        print(f"Evento tarjeta recibido: {evento.get('tipo')} - {evento.get('cliente')}")
+
+# Iniciar hilo consumidor de tarjetas junto al de transferencias
+threading.Thread(target=consume_cards, daemon=True).start()
 threading.Thread(target=consume_transactions, daemon=True).start()
+
+# Nueva API para obtener eventos de tarjetas
+@app.route('/api/cards')
+def get_cards():
+    with cards_lock:
+        return jsonify(list(tarjetas_eventos.values()))
 
 # API: listar transacciones
 @app.route('/api/transactions')

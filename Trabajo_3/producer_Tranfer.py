@@ -7,7 +7,7 @@ from kafka import KafkaProducer
 
 # Conexión a Kafka
 producer = KafkaProducer(
-    bootstrap_servers=['localhost:9092'],
+    bootstrap_servers=['localhost:29092'],
     value_serializer=lambda v: json.dumps(v, default=str).encode('utf-8')
 )
 
@@ -27,10 +27,11 @@ while True:
         'nombre': random.choice(NOMBRES),
         'entidad': random.choice(ENTIDADES),
         'tipo': random.choice(TIPOS_TRANSACCION),
-        'monto': round(random.uniform(10.0, 5000.0), 2),
+        'monto': round(random.uniform(10.0, 8000.0), 2),
+        'timestamp': datetime.now().isoformat(),
         'estado': 'pendiente'
     }
 
     producer.send(TOPIC, value=evento)
     print(f"✉ [ENVIADO] {evento['transaction_id']} | {evento['nombre']} | {evento['entidad']} | ${evento['monto']}")
-    time.sleep(30)  # una transacción cada 10 segundos
+    time.sleep(1)  # una transacción cada 10 segundos

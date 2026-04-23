@@ -5,7 +5,7 @@ from datetime import datetime
 # Consumidor del topic 'transferencia'
 consumer = KafkaConsumer(
     'transferencia',
-    bootstrap_servers=['localhost:9092'],
+    bootstrap_servers=['localhost:29092'],
     auto_offset_reset='earliest',
     group_id='alerta-group',      # Grupo independiente
     value_deserializer=lambda m: json.loads(m.decode('utf-8'))
@@ -13,7 +13,7 @@ consumer = KafkaConsumer(
 
 # Productor para el topic 'alertas'
 producer = KafkaProducer(
-    bootstrap_servers=['localhost:9092'],
+    bootstrap_servers=['localhost:29092'],
     value_serializer=lambda v: json.dumps(v, default=str).encode('utf-8')
 )
 
