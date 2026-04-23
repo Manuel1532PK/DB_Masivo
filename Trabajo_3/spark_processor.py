@@ -53,11 +53,9 @@ parsed = raw_stream \
     .selectExpr("CAST(value AS STRING) as json_str") \
     .select(from_json(col("json_str"), schema).alias("data")) \
     .select("data.*") \
-    .withColumn("fecha", to_timestamp("fecha", "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")) \
-    .withWatermark("event_time", "10 seconds")   
-
-# Filtrar filas con monto nulo o negativo (por si acaso)
-parsed = parsed.filter(col("monto").isNotNull() & (col("monto") > 0))
+    .withColumn("event_time", to_timestamp(col("timestamp"), "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")) \
+    .withWatermark("event_time", "10 seconds") \
+    .filter(col("monto").isNotNull() & (col("monto") > 0))
 
 # Ventana tumbling de 1 minuto, agrupando por entidad, usando event_time
 resultado = parsed \

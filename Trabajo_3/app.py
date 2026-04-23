@@ -74,7 +74,7 @@ def get_transactions():
 @app.route('/api/decide/<tx_id>', methods=['POST'])
 def decide(tx_id):
     data = request.get_json()
-    action = data.get('action')  # 'accept' or 'reject'
+    action = data.get('action')  
     if action not in ('accept', 'reject'):
         return jsonify({'error': 'acción inválida'}), 400
 
