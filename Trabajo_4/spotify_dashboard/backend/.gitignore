@@ -6,7 +6,8 @@ node_modules/
 
 # Credenciales sensibles
 data/
-*.json
+credentials.json
+data/*.json
 
 # Logs
 logs/
