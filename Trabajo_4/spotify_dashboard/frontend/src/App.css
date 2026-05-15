@@ -1,0 +1,421 @@
+:root {
+  --green: #1db954;
+  --black: #121212;
+  --grey: #181818;
+  --text: #ffffff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--black);
+  color: var(--text);
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+  margin: 0;
+}
+
+.app-container {
+  padding: 20px;
+  min-height: 100vh;
+  background-color: var(--black);
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #333;
+}
+
+.navbar h1 {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.filter-trigger {
+  background: var(--grey);
+  color: white;
+  border: 1px solid #333;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.filter-trigger:hover {
+  background: #282828;
+  border-color: var(--green);
+}
+
+/* Dashboard Layout */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+.dashboard-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.dashboard-analytics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #b3b3b3;
+  font-size: 16px;
+}
+
+/* Section Title */
+.section-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--text);
+  margin-bottom: 15px;
+}
+
+/* Stats Cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.stat-card {
+  background: var(--grey);
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  border-color: var(--green);
+  transform: translateY(-5px);
+}
+
+.stat-icon {
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+}
+
+.stat-content {
+  flex: 1;
+}
+.stat-label {
+  color: #b3b3b3;
+  font-size: 12px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.stat-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--green);
+}
+
+/* Chart Container */
+.chart-container {
+  background: var(--grey);
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+/* Artists Ranking */
+.ranking-container {
+  background: var(--grey);
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.artists-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.artist-item {
+  display: grid;
+  grid-template-columns: 40px 1fr 120px;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  background: #1f1f1f;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.artist-item:hover {
+  background: #282828;
+  border-left: 3px solid var(--green);
+  padding-left: 12px;
+}
+
+.artist-rank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.rank-number {
+  color: #b3b3b3;
+}
+
+.artist-info {
+}
+.artist-name {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+.artist-meta {
+  color: #b3b3b3;
+  font-size: 12px;
+}
+
+.artist-popularity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pop-bar-container {
+  flex: 1;
+  height: 4px;
+  background: #333;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.pop-bar {
+  height: 100%;
+  background: var(--green);
+  border-radius: 2px;
+}
+.pop-value {
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--green);
+  min-width: 35px;
+}
+
+/* Tabla */
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--grey);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.custom-table th {
+  text-align: left;
+  padding: 15px;
+  color: #b3b3b3;
+  border-bottom: 1px solid #333;
+  background: #1f1f1f;
+  font-weight: 600;
+}
+
+.custom-table td {
+  padding: 15px;
+  border-bottom: 1px solid #282828;
+  text-align: left;
+}
+
+.custom-table tbody tr:hover {
+  background: #1f1f1f;
+}
+
+.highlight-text {
+  color: var(--green);
+  font-weight: bold;
+}
+.badge {
+  background: #333;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  color: #b3b3b3;
+}
+
+/* Popularidad */
+.pop-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pop-bar {
+  height: 4px;
+  background: var(--green);
+  border-radius: 2px;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #282828;
+  padding: 25px;
+  border-radius: 12px;
+  width: 320px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h3 {
+  margin: 0;
+}
+
+.close-icon {
+  background: none;
+  border: none;
+  color: #b3b3b3;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.close-icon:hover {
+  color: var(--green);
+}
+
+.modal-body {
+  margin-bottom: 20px;
+}
+
+.filter-item {
+  margin-bottom: 20px;
+}
+.filter-item label {
+  display: block;
+  margin-bottom: 8px;
+  color: #b3b3b3;
+  font-size: 12px;
+}
+.filter-item select {
+  width: 100%;
+  padding: 10px;
+  background: #333;
+  color: white;
+  border: 1px solid #333;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.filter-item select:focus {
+  outline: none;
+  border-color: var(--green);
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  background: var(--green);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #1ed760;
+  transform: scale(1.02);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .dashboard-analytics {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 15px;
+  }
+  .navbar {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  .navbar h1 {
+    font-size: 24px;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .artist-item {
+    grid-template-columns: 30px 1fr 80px;
+    gap: 10px;
+  }
+  .modal-content {
+    width: 90%;
+    max-width: 320px;
+  }
+}
+
+.active-filter {
+  background: #1db95420;
+  border: 1px solid #1db954;
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.clear-filter {
+  background: none;
+  border: none;
+  color: #1db954;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.clear-filter:hover {
+  text-decoration: underline;
+}
