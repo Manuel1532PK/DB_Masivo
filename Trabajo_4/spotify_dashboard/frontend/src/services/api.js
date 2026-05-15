@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Base URL for the API
-const API_URL = "http://localhost:3000/api/analytics";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api/analytics";
 
 export const getSongs = async (genre = "") => {
   try {

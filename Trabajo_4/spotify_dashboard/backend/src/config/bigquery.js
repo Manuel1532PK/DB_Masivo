@@ -3,33 +3,33 @@ const path = require("path");
 const fs = require("fs");
 require("dotenv").config({ path: path.resolve(process.cwd(), ".env") });
 
-// Leer variables con valores por defecto para depuración
 const projectId = process.env.GOOGLE_CLOUD_PROJECT;
-const keyFilename = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+const credentialsRaw = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 const location = process.env.GOOGLE_LOCATION || "southamerica-east1";
 
-console.log("📌Variables de entorno cargadas:");
+console.log("📌 Variables de entorno cargadas:");
 console.log(`GOOGLE_CLOUD_PROJECT: ${projectId}`);
-console.log(`GOOGLE_APPLICATION_CREDENTIALS: ${keyFilename}`);
 console.log(`GOOGLE_LOCATION: ${location}`);
 
-if (!projectId || !keyFilename) {
+if (!projectId || !credentialsRaw) {
   console.error("Faltan variables obligatorias en .env");
   process.exit(1);
 }
 
-const resolvedKeyPath = path.resolve(process.cwd(), keyFilename);
-if (!fs.existsSync(resolvedKeyPath)) {
-  console.error(`Archivo de credenciales no encontrado: ${resolvedKeyPath}`);
-  console.error("   Asegúrate de que el archivo existe y la ruta es correcta.");
-  process.exit(1);
+let bigquery;
+if (credentialsRaw.trim().startsWith("{")) {
+  const credentials = JSON.parse(credentialsRaw);
+  bigquery = new BigQuery({ projectId, credentials });
+  console.log("✅ Credenciales cargadas desde variable de entorno (JSON inline)");
+} else {
+  const resolvedKeyPath = path.resolve(process.cwd(), credentialsRaw);
+  if (!fs.existsSync(resolvedKeyPath)) {
+    console.error(`Archivo de credenciales no encontrado: ${resolvedKeyPath}`);
+    process.exit(1);
+  }
+  bigquery = new BigQuery({ projectId, keyFilename: resolvedKeyPath });
+  console.log("✅ Credenciales cargadas desde archivo local");
 }
-
-// Crear cliente sin especificar ubicación global para evitar problemas de ubicación
-const bigquery = new BigQuery({
-  projectId,
-  keyFilename: resolvedKeyPath,
-});
 
 // Función helper para ejecutar queries con ubicación explícita
 async function runQuery(query) {
