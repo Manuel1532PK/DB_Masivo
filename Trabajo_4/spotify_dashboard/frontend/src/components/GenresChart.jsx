@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const GenresChart = ({ genres }) => {
+const GenresChart = ({ genres, onGenreClick }) => {
   const data = genres.map((g) => ({
     name: g.genre,
     popularidad: Math.round(g.avg_popularity),
@@ -40,6 +40,8 @@ const GenresChart = ({ genres }) => {
             dataKey="popularidad"
             fill="#1DB954"
             name="Popularidad Promedio"
+            cursor="pointer"
+            onClick={(data) => onGenreClick && onGenreClick(data.name)}
           />
         </BarChart>
       </ResponsiveContainer>

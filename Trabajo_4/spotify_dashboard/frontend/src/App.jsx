@@ -78,7 +78,7 @@ function App() {
             {/* Analytics */}
             <section className="dashboard-analytics">
               <div className="analytics-col">
-                <GenresChart genres={genres} />
+                <GenresChart genres={genres} onGenreClick={(genre) => setFilters({ ...filters, genre })} />
               </div>
               <div className="analytics-col">
                 <ArtistsRanking artists={artists} />
