@@ -33,6 +33,21 @@ app.use((req, res, next) => {
 // Prefijo de la API y montaje de las rutas
 app.use("/api/analytics", analyticsRoutes);
 
+// Root route
+app.get("/", (req, res) => {
+  res.status(200).json({
+    status: "OK",
+    message: "Spotify Analytics Dashboard API",
+    endpoints: {
+      health: "/api/health",
+      genres: "/api/analytics/genres",
+      artists: "/api/analytics/artists",
+      stats: "/api/analytics/stats",
+      songs: "/api/analytics/songs",
+    },
+  });
+});
+
 // Health check route
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "OK", message: "API is running" });
